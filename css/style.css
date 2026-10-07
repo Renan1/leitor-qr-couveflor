@@ -156,9 +156,8 @@ body{
 .camera-visor{
   position:relative; overflow:hidden; background: var(--visor-bg); border-radius: var(--radius-md);
   border:1px solid rgba(255,255,255,.1); margin-bottom:.75rem; width:100%;
-  aspect-ratio: 4 / 3; max-height: 290px; display:flex; align-items:center; justify-content:center;
+  aspect-ratio: 3 / 4; display:flex; align-items:center; justify-content:center;
 }
-.camera-visor.compact{ max-height: 190px; }
 .camera-visor video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
 .visor-grid{ position:absolute; inset:0; pointer-events:none; background: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px); background-size:20px 20px; }
 .reticle-box{ width:46%; aspect-ratio:1; max-width:170px; position:relative; pointer-events:none; z-index:2; }

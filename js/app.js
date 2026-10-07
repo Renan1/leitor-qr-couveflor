@@ -120,7 +120,6 @@ function openFolder(id){
   els.manualCard.classList.toggle('hidden', rampa);
   els.logCard.classList.toggle('hidden', rampa);
   els.rampaChip.classList.toggle('hidden', !rampa);
-  els.visor.classList.toggle('compact', rampa);
   els.rampaExport.classList.toggle('hidden', !rampa);
   setIntervalOptions(rampa);
   if(rampa){ buildRampaGrid(); renderRampa(f); }
