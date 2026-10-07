@@ -18,18 +18,28 @@
   </div>
 </header>
 
-<!-- ===================== TELA INICIAL ===================== -->
-<div id="homeScreen">
+<!-- ===================== MENU (escolha do módulo) ===================== -->
+<div id="menuScreen">
+  <button type="button" class="menu-btn" id="menuPresencaBtn">
+    <span class="mtitulo">Presença</span>
+    <span class="mdesc">Ler o QR dos colaboradores e marcar quem comeu</span>
+    <span class="minfo" id="menuPresencaInfo"></span>
+  </button>
+  <button type="button" class="menu-btn" id="menuRampaBtn">
+    <span class="mtitulo">Rampa</span>
+    <span class="mdesc">Contar quantas pessoas de cada empresa passaram</span>
+    <span class="minfo" id="menuRampaInfo"></span>
+  </button>
+</div>
+
+<!-- ===================== MÓDULO: NOVA PASTA + LISTA ===================== -->
+<div id="homeScreen" class="hidden">
+
+  <button class="backbtn" id="moduleBackBtn">&larr; Voltar ao menu</button>
+  <h2 class="module-title" id="moduleTitle"></h2>
 
   <div class="card">
     <h2>Nova pasta</h2>
-    <div class="field" style="margin-bottom:10px;">
-      <label class="flabel">Modo</label>
-      <select id="modeSelect">
-        <option value="presenca" selected>Presença (colaboradores)</option>
-        <option value="rampa">Rampa (contagem por cliente)</option>
-      </select>
-    </div>
     <div class="row" style="margin-bottom:10px;">
       <div class="field">
         <label class="flabel">Refeição</label>

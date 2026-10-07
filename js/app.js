@@ -8,11 +8,13 @@ const els = Object.fromEntries([
   'backBtn','folderTitle','folderSubtitle','video','reticle','camPlaceholder','intervalSelect','startBtn','stopBtn',
   'camDot','camStatus','manualCode','manualQty','manualBtn','totalCount','uniqueCount','logBody','emptyLog',
   'downloadBtn','shareBtn','shareStatus','deleteFolderBtn','storageWarning',
-  'modeSelect','rampaCard','rampaGrid','rampaTotal','undoBtn','rampaMsg','manualCard','rampaExport','resumoBtn','printBtn','printSummary',
+  'menuScreen','menuPresencaBtn','menuRampaBtn','menuPresencaInfo','menuRampaInfo','moduleBackBtn','moduleTitle','rampaCard','rampaGrid','rampaTotal','undoBtn','rampaMsg','manualCard','rampaExport','resumoBtn','printBtn','printSummary',
 ].map(id => [id, document.getElementById(id)]));
 
 const mealLabels = { Desjejum:'Desjejum', Cafe:'Café', Almoco:'Almoço', Jantar:'Jantar', Ceia:'Ceia', LMadrugada:'L. Madrugada' };
 let currentId = null;
+let currentModo = 'presenca'; // módulo aberto: 'presenca' | 'rampa'
+const moduloNome = { presenca: 'Presença', rampa: 'Rampa' };
 
 // Todo dado externo (QR, nome de pasta) entra na tela via textContent, nunca innerHTML.
 function el(tag, props = {}, ...children){
@@ -27,7 +29,7 @@ const todayISO = () => { const d = new Date(); return `${d.getFullYear()}-${pad(
 function suggestName(){
   const meal = mealLabels[els.mealSelect.value] || els.mealSelect.value;
   const [y, m, d] = els.dateInput.value.split('-');
-  return `${els.modeSelect.value === 'rampa' ? 'Rampa ' : ''}${meal}${d}.${m}.${y}`;
+  return `${currentModo === 'rampa' ? 'Rampa ' : ''}${meal}${d}.${m}.${y}`;
 }
 
 // ---------- aviso de armazenamento ----------
@@ -38,13 +40,13 @@ const updateWarning = () => { els.storageWarning.textContent = store.state.stora
 // ---------- telas ----------
 function renderFolderList(){
   els.folderList.replaceChildren();
-  const folders = store.state.folders;
+  const folders = store.state.folders.filter(f => f.modo === currentModo);
   els.emptyFolders.classList.toggle('hidden', folders.length > 0);
   [...folders].reverse().forEach(f => {
     const btn = el('button', { type: 'button', className: 'folder-item' },
       el('div', {},
         el('div', { className: 'fname', textContent: f.name }),
-        el('div', { className: 'fmeta', textContent: `${f.modo === 'rampa' ? 'Rampa · ' : ''}${mealLabels[f.meal] || f.meal} · ${f.date}` })),
+        el('div', { className: 'fmeta', textContent: `${mealLabels[f.meal] || f.meal} · ${f.date}` })),
       el('div', { className: 'fcount', textContent: f.modo === 'rampa' ? resumo(f).total : f.records.length }));
     btn.addEventListener('click', () => openFolder(f.id));
     els.folderList.append(btn);
@@ -90,6 +92,7 @@ function openFolder(id){
   const f = store.findFolder(id);
   if(!f) return;
   currentId = id;
+  currentModo = f.modo;
   els.folderTitle.textContent = f.name;
   els.folderSubtitle.textContent = `${mealLabels[f.meal] || f.meal} · ${f.date}`;
   els.shareStatus.textContent = '';
@@ -102,7 +105,31 @@ function openFolder(id){
   if(rampa){ buildRampaGrid(); renderRampa(f); }
   renderLog(f);
   els.homeScreen.classList.add('hidden');
+  els.menuScreen.classList.add('hidden');
   els.folderScreen.classList.remove('hidden');
+  window.scrollTo(0, 0);
+}
+
+function showMenu(){
+  stopCamera();
+  currentId = null;
+  els.folderScreen.classList.add('hidden');
+  els.homeScreen.classList.add('hidden');
+  els.menuScreen.classList.remove('hidden');
+  const n = (m) => store.state.folders.filter(f => f.modo === m).length;
+  els.menuPresencaInfo.textContent = `${n('presenca')} pasta(s)`;
+  els.menuRampaInfo.textContent = `${n('rampa')} pasta(s)`;
+  window.scrollTo(0, 0);
+}
+
+function openModule(modo){
+  currentModo = modo;
+  els.moduleTitle.textContent = moduloNome[modo];
+  els.menuScreen.classList.add('hidden');
+  els.folderScreen.classList.add('hidden');
+  els.homeScreen.classList.remove('hidden');
+  els.folderNameInput.value = suggestName();
+  renderFolderList();
   window.scrollTo(0, 0);
 }
 
@@ -110,8 +137,7 @@ function goHome(){
   stopCamera();
   currentId = null;
   els.folderScreen.classList.add('hidden');
-  els.homeScreen.classList.remove('hidden');
-  renderFolderList();
+  openModule(currentModo);
   window.scrollTo(0, 0);
 }
 
@@ -210,17 +236,18 @@ els.dateInput.addEventListener('change', () => els.folderNameInput.value = sugge
 els.createFolderBtn.addEventListener('click', () => {
   const folder = store.addFolder({
     name: els.folderNameInput.value.trim() || suggestName(),
-    modo: els.modeSelect.value,
+    modo: currentModo,
     meal: els.mealSelect.value,
     date: els.dateInput.value,
   });
   updateWarning();
-  renderFolderList();
   els.folderNameInput.value = suggestName();
   openFolder(folder.id);
 });
 
-els.modeSelect.addEventListener('change', () => els.folderNameInput.value = suggestName());
+els.menuPresencaBtn.addEventListener('click', () => openModule('presenca'));
+els.menuRampaBtn.addEventListener('click', () => openModule('rampa'));
+els.moduleBackBtn.addEventListener('click', showMenu);
 els.backBtn.addEventListener('click', goHome);
 els.undoBtn.addEventListener('click', () => {
   const f = store.findFolder(currentId);
@@ -282,4 +309,4 @@ window.addEventListener('beforeunload', (e) => {
 
 store.load();
 updateWarning();
-renderFolderList();
+showMenu();

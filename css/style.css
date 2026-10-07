@@ -128,3 +128,13 @@
     #printSummary td:last-child, #printSummary th:last-child{ text-align:right; }
     #printSummary tr.total td{ font-weight:700; border-top:2px solid #000; }
   }
+
+  /* ---------- menu de módulos ---------- */
+  #menuScreen{ display:flex; flex-direction:column; gap:14px; margin-top:8px; }
+  .menu-btn{ display:flex; flex-direction:column; align-items:flex-start; gap:6px; width:100%; min-height:132px;
+    padding:20px; background: var(--accent); color:#fff; border-radius: var(--radius); text-align:left; white-space:normal; }
+  .menu-btn:nth-child(2){ background: var(--accent-dark); }
+  .menu-btn .mtitulo{ font-size:24px; font-weight:700; }
+  .menu-btn .mdesc{ font-size:14px; font-weight:400; opacity:0.92; }
+  .menu-btn .minfo{ font-size:12.5px; font-weight:500; opacity:0.85; margin-top:auto; }
+  .module-title{ font-size:20px; margin:0 0 14px; color: var(--accent-dark); }
