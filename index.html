@@ -23,6 +23,13 @@
 
   <div class="card">
     <h2>Nova pasta</h2>
+    <div class="field" style="margin-bottom:10px;">
+      <label class="flabel">Modo</label>
+      <select id="modeSelect">
+        <option value="presenca" selected>Presença (colaboradores)</option>
+        <option value="rampa">Rampa (contagem por cliente)</option>
+      </select>
+    </div>
     <div class="row" style="margin-bottom:10px;">
       <div class="field">
         <label class="flabel">Refeição</label>
@@ -93,7 +100,17 @@
     </div>
   </div>
 
-  <div class="card">
+  <div class="card hidden" id="rampaCard">
+    <h2>Contagem por cliente</h2>
+    <div class="rampa-grid" id="rampaGrid"></div>
+    <div class="rampa-foot">
+      <div class="stat"><b id="rampaTotal">0</b><span>total de pessoas</span></div>
+      <button class="secondary" id="undoBtn">Desfazer última</button>
+    </div>
+    <div class="status-line" id="rampaMsg" role="status"></div>
+  </div>
+
+  <div class="card" id="manualCard">
     <h2>Registro manual</h2>
     <div class="row">
       <div class="field" style="flex:2 1 140px;">
@@ -130,6 +147,10 @@
       <button class="secondary" id="downloadBtn">Baixar CSV</button>
       <button id="shareBtn">Enviar por e-mail</button>
     </div>
+    <div class="btnrow hidden" id="rampaExport" style="margin-top:10px;">
+      <button class="secondary" id="resumoBtn">Baixar resumo (CSV)</button>
+      <button class="secondary" id="printBtn">Imprimir resumo</button>
+    </div>
     <div class="status-line" id="shareStatus"></div>
   </div>
 
@@ -142,6 +163,8 @@
   </div>
 
 </div>
+
+<section id="printSummary" aria-hidden="true"></section>
 
 <script src="vendor/jsQR.js"></script>
 <script type="module" src="js/app.js"></script>

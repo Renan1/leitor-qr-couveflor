@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Couve Flor — QR Codes dos Clientes</title>
+<link rel="icon" type="image/png" href="assets/icons/favicon-128.png">
+<style>
+  body{ font-family: system-ui, sans-serif; margin: 0; padding: 20px; color:#16201c; }
+  h1{ font-size: 18px; margin: 0 0 4px; }
+  p.nota{ font-size: 13px; color:#63756c; margin: 0 0 18px; }
+  .grade{ display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+  .qr{ border: 2px dashed #999; border-radius: 12px; padding: 14px; text-align:center; break-inside: avoid; }
+  .qr svg{ width: 100%; max-width: 190px; height:auto; }
+  .qr b{ display:block; font-size: 20px; margin-top: 6px; }
+  .qr span{ font-family: monospace; font-size: 12px; color:#63756c; }
+  button{ margin-bottom: 16px; padding: 10px 16px; font-size: 14px; }
+  @media print{ button, .nota{ display:none; } }
+</style>
+</head>
+<body>
+<button onclick="window.print()">Imprimir</button>
+<h1>QR Codes dos clientes — Rampa</h1>
+<p class="nota">Imprima, plastifique e recorte. O QR guarda só o código (ex.: CF:MELI), então o nome da empresa pode mudar sem trocar o cartão.</p>
+<div class="grade" id="grade"></div>
+
+<script src="vendor/qrcode.js"></script>
+<script type="module">
+  import { CLIENTES, qrDoCliente } from './js/clientes.js';
+  const grade = document.getElementById('grade');
+  for(const c of CLIENTES){
+    const qr = qrcode(0, 'M');
+    qr.addData(qrDoCliente(c.id));
+    qr.make();
+    const box = document.createElement('div');
+    box.className = 'qr';
+    box.innerHTML = qr.createSvgTag({ cellSize: 6, margin: 2, scalable: true }); // SVG gerado pela lib a partir de dado fixo do código
+    const nome = document.createElement('b'); nome.textContent = c.nome;
+    const cod = document.createElement('span'); cod.textContent = qrDoCliente(c.id);
+    box.append(nome, cod);
+    grade.append(box);
+  }
+</script>
+</body>
+</html>

@@ -37,6 +37,8 @@ Idioma da interface, commits e documentação: **português do Brasil**.
 9. **Exportação**: CSV por pasta, separador `;`, quebra `\r\n`, cabeçalho `TIME;CODE;QTY`, arquivo nomeado a partir do nome da pasta sem acentos. Envio por e-mail via Web Share API com arquivo; fallback = baixar CSV + abrir `mailto:`.
 10. **Formato de origem** (planilha original da operação): aba `Barcode`, colunas `TIME`, `CODE`, `QTY`, `TIME` no formato `AAAA-MM-DD HH:MM:SS`, arquivo `Almoco10_08_2026.xls`. O CSV exportado deve continuar compatível com esse layout.
 
+11. **Modo Rampa** (contagem de pessoas por cliente, pasta com `modo: 'rampa'`): cada leitura de `CF:<ID>` (TUPP, GRAN, MELI, COM, BALC) grava uma linha `{time, code: <ID>, qty: 1}`. QR fora dessa lista é **rejeitado e não conta** (exceção à regra 4, só na Rampa). Sem debounce por código (regra 3 vale): só o intervalo fixo, que na Rampa também aceita 0,5 s (padrão 1,0 s). Correção = botão "Desfazer última". Presença segue com 1,0/1,5 s e aceitando qualquer QR. Lista de clientes em `js/clientes.js`; QRs para imprimir em `qrs.html`.
+
 ---
 
 ## 3. Invariantes de comportamento (testes de regressão mentais)

@@ -1,3 +1,5 @@
+import { resumo } from './clientes.js';
+
 // Valores iniciados por = + - @ tab ou CR viram fórmula no Excel/Sheets: prefixo ' neutraliza.
 // Só na exportação; a tela continua mostrando o dado original.
 const neutralize = (v) => /^[=+\-@\t\r]/.test(v) ? "'" + v : v;
@@ -23,6 +25,14 @@ function download(csv, fileName){
 }
 
 export const downloadCsv = (f) => download(buildCsv(f), csvFileName(f));
+
+// Resumo da Rampa: CLIENTE;CODIGO;QTD + linha de total.
+export function buildResumoCsv(f){
+  const { linhas, total } = resumo(f);
+  const rows = [...linhas.map(l => [l.nome, l.id, l.qtd]), ['TOTAL', '', total]];
+  return ['CLIENTE;CODIGO;QTD', ...rows.map(r => r.map(csvEscape).join(';'))].join('\r\n') + '\r\n';
+}
+export const downloadResumoCsv = (f) => download(buildResumoCsv(f), 'Resumo_' + csvFileName(f));
 
 // Retorna true se caiu no fallback (baixou o CSV e abriu o e-mail).
 export async function shareCsv(f){

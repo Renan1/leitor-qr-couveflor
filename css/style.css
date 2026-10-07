@@ -104,3 +104,27 @@
   .empty-folders{ color: var(--text-dim); font-size:13.5px; padding: 6px 2px 2px; }
 
   .hidden{ display:none !important; }
+
+  /* ---------- modo Rampa ---------- */
+  .rampa-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+  .rampa-btn{ display:flex; flex-direction:column; align-items:flex-start; gap:2px; min-height:84px; padding:12px 14px;
+    background:#fff; color: var(--text); border:1px solid var(--line); text-align:left; white-space:normal; }
+  .rampa-btn:last-child:nth-child(odd){ grid-column: 1 / -1; }
+  .rampa-btn .rnome{ font-size:13px; font-weight:600; color: var(--text-dim); }
+  .rampa-btn .rqtd{ font-family:'IBM Plex Mono', monospace; font-size:30px; font-weight:600; color: var(--accent-dark); line-height:1.1; }
+  .rampa-btn.hit{ border-color: var(--accent); background: var(--accent-tint); }
+  .rampa-foot{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; }
+  .status-line.err{ color: var(--danger); font-weight:600; }
+  .reticle.reject{ border-color: var(--danger); box-shadow: 0 0 0 4px rgba(189,68,56,0.35) inset; }
+
+  #printSummary{ display:none; }
+  @media print{
+    body > *:not(#printSummary){ display:none !important; }
+    #printSummary{ display:block; font-family:'IBM Plex Sans', sans-serif; color:#000; }
+    #printSummary h1{ font-size:20px; margin:0 0 4px; }
+    #printSummary p{ margin:0 0 14px; font-size:13px; }
+    #printSummary table{ font-size:15px; }
+    #printSummary th, #printSummary td{ padding:8px 10px; border-bottom:1px solid #999; }
+    #printSummary td:last-child, #printSummary th:last-child{ text-align:right; }
+    #printSummary tr.total td{ font-weight:700; border-top:2px solid #000; }
+  }

@@ -9,7 +9,7 @@ export function save(){
   try{
     const data = state.folders.map(f => ({
       id: f.id, name: f.name, meal: f.meal, date: f.date,
-      records: f.records, seen: [...f.seen.entries()],
+      modo: f.modo, records: f.records, seen: [...f.seen.entries()],
     }));
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     state.storageOk = true;
@@ -22,7 +22,7 @@ export function save(){
 export function load(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw) state.folders = JSON.parse(raw).map(f => ({ ...f, seen: new Map(f.seen || []) }));
+    if(raw) state.folders = JSON.parse(raw).map(f => ({ ...f, modo: f.modo || 'presenca', seen: new Map(f.seen || []) }));
     state.storageOk = true;
   }catch(err){
     state.storageOk = false;
@@ -30,10 +30,10 @@ export function load(){
   }
 }
 
-export function addFolder({ name, meal, date }){
+export function addFolder({ name, meal, date, modo = 'presenca' }){
   const folder = {
     id: 'f' + Date.now() + Math.random().toString(36).slice(2,6),
-    name, meal, date, records: [], seen: new Map(),
+    name, meal, date, modo, records: [], seen: new Map(),
   };
   state.folders.push(folder);
   save();
@@ -52,4 +52,14 @@ export function addRecord(folder, code, qty){
   folder.records.push({ time, code, qty });
   folder.seen.set(code, (folder.seen.get(code) || 0) + qty);
   save();
+}
+
+// Desfazer: remove a última leitura da pasta. Retorna a leitura removida (ou undefined).
+export function removeLastRecord(folder){
+  const rec = folder.records.pop();
+  if(!rec) return;
+  const left = (folder.seen.get(rec.code) || 0) - rec.qty;
+  if(left > 0) folder.seen.set(rec.code, left); else folder.seen.delete(rec.code);
+  save();
+  return rec;
 }
