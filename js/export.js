@@ -32,7 +32,12 @@ export function buildResumoCsv(f){
   const rows = [...linhas.map(l => [l.nome, l.id, l.qtd]), ['TOTAL', '', total]];
   return ['CLIENTE;CODIGO;QTD', ...rows.map(r => r.map(csvEscape).join(';'))].join('\r\n') + '\r\n';
 }
-export const downloadResumoCsv = (f) => download(buildResumoCsv(f), 'Resumo_' + csvFileName(f));
+// Texto simples do resumo, para colar no WhatsApp ou em outro app.
+export function buildResumoTexto(f, mealLabel){
+  const { linhas, total } = resumo(f);
+  return [`${f.name} — ${mealLabel} · ${f.date}`, '', ...linhas.map(l => `${l.nome}: ${l.qtd}`), '', `TOTAL: ${total}`].join('\n');
+}
+export const downloadResumoCsv =(f) => download(buildResumoCsv(f), 'Resumo_' + csvFileName(f));
 
 // Retorna true se caiu no fallback (baixou o CSV e abriu o e-mail).
 export async function shareCsv(f){

@@ -1,7 +1,7 @@
 import * as store from './store.js';
 import * as scanner from './scanner.js';
-import { downloadCsv, shareCsv, downloadResumoCsv } from './export.js';
-import { CLIENTES, clienteDoQr, resumo } from './clientes.js';
+import { downloadCsv, shareCsv, downloadResumoCsv, buildResumoTexto } from './export.js';
+import { CLIENTES, QR_PREFIX, clienteDoQr, resumo } from './clientes.js';
 
 const els = Object.fromEntries([
   'homeScreen','folderScreen','mealSelect','dateInput','folderNameInput','createFolderBtn','folderList','emptyFolders',
@@ -9,6 +9,7 @@ const els = Object.fromEntries([
   'camDot','camStatus','manualCode','manualQty','manualBtn','totalCount','uniqueCount','logBody','emptyLog',
   'downloadBtn','shareBtn','shareStatus','deleteFolderBtn','storageWarning',
   'menuScreen','menuPresencaBtn','menuRampaBtn','menuPresencaInfo','menuRampaInfo','moduleBackBtn','moduleTitle','rampaCard','rampaGrid','rampaTotal','undoBtn','rampaMsg','manualCard','rampaExport','resumoBtn','printBtn','printSummary',
+  'visor','visorFlash','hitBadge','rampaChip','rampaBar','rampaLast','logCard','whatsBtn','copyBtn',
 ].map(id => [id, document.getElementById(id)]));
 
 const mealLabels = { Desjejum:'Desjejum', Cafe:'Café', Almoco:'Almoço', Jantar:'Jantar', Ceia:'Ceia', LMadrugada:'L. Madrugada' };
@@ -45,9 +46,9 @@ function renderFolderList(){
   [...folders].reverse().forEach(f => {
     const btn = el('button', { type: 'button', className: 'folder-item' },
       el('div', {},
-        el('div', { className: 'fname', textContent: f.name }),
-        el('div', { className: 'fmeta', textContent: `${mealLabels[f.meal] || f.meal} · ${f.date}` })),
-      el('div', { className: 'fcount', textContent: f.modo === 'rampa' ? resumo(f).total : f.records.length }));
+        el('p', { className: 'folder-title', textContent: f.name }),
+        el('p', { className: 'folder-sub', textContent: `${mealLabels[f.meal] || f.meal} · ${f.date}` })),
+      el('span', { className: 'folder-count', textContent: f.modo === 'rampa' ? resumo(f).total : f.records.length }));
     btn.addEventListener('click', () => openFolder(f.id));
     els.folderList.append(btn);
   });
@@ -62,23 +63,40 @@ function renderLog(f){
 }
 
 const isRampa = (f) => f.modo === 'rampa';
-const rampaBtns = new Map(); // id do cliente -> elemento do contador
+const rampaBtns = new Map(); // id do cliente -> { btn, qtd, seg }
+const clienteCodigo = (c) => c.qr ? c.qr.slice(0, 4) : QR_PREFIX + c.id; // "0102" ou "CF:BALC"
 
 function buildRampaGrid(){
   rampaBtns.clear();
+  els.rampaBar.replaceChildren();
   els.rampaGrid.replaceChildren(...CLIENTES.map(c => {
-    const qtd = el('span', { className: 'rqtd', textContent: '0' });
-    const btn = el('button', { type: 'button', className: 'rampa-btn' }, el('span', { className: 'rnome', textContent: c.nome }), qtd);
+    const cls = `c-${c.id.toLowerCase()}`;
+    const qtd = el('div', { className: 'client-count', textContent: '0' });
+    const btn = el('button', { type: 'button', className: `client-card ${cls}` },
+      el('div', { className: 'client-header' },
+        el('span', { className: 'client-badge-circle', textContent: c.nome[0] }),
+        el('div', {},
+          el('div', { className: 'client-name', textContent: c.nome }),
+          el('div', { className: 'client-code mono', textContent: clienteCodigo(c) }))),
+      qtd);
     btn.addEventListener('click', () => registerRampa(c));
-    rampaBtns.set(c.id, { btn, qtd });
+    const seg = el('div', { className: `bar-seg ${cls}`, title: c.nome });
+    els.rampaBar.append(seg);
+    rampaBtns.set(c.id, { btn, qtd, seg });
     return btn;
   }));
 }
 
 function renderRampa(f){
   const { linhas, total } = resumo(f);
-  linhas.forEach(l => { rampaBtns.get(l.id).qtd.textContent = l.qtd; });
+  linhas.forEach(l => {
+    const r = rampaBtns.get(l.id);
+    r.qtd.textContent = l.qtd;
+    r.seg.style.width = total ? `${(l.qtd / total) * 100}%` : '0';
+  });
   els.rampaTotal.textContent = total;
+  const last = f.records.at(-1);
+  els.rampaLast.textContent = last ? (CLIENTES.find(c => c.id === last.code)?.nome || last.code) : '—';
 }
 
 function setIntervalOptions(rampa){
@@ -100,6 +118,9 @@ function openFolder(id){
   const rampa = isRampa(f);
   els.rampaCard.classList.toggle('hidden', !rampa);
   els.manualCard.classList.toggle('hidden', rampa);
+  els.logCard.classList.toggle('hidden', rampa);
+  els.rampaChip.classList.toggle('hidden', !rampa);
+  els.visor.classList.toggle('compact', rampa);
   els.rampaExport.classList.toggle('hidden', !rampa);
   setIntervalOptions(rampa);
   if(rampa){ buildRampaGrid(); renderRampa(f); }
@@ -153,18 +174,33 @@ function beep(freq = 880){
     osc.start(); osc.stop(audioCtx.currentTime + 0.09);
   }catch(e){}
 }
-function feedback(){
+// Pisca o visor e mostra um selo curto sobre a câmera (rampa).
+let badgeTimer = null;
+function flashVisor(reticleCls, ms, badgeText, err){
+  els.reticle.classList.add(reticleCls);
+  els.visorFlash.classList.toggle('reject', !!err);
+  els.visorFlash.classList.add('active');
+  requestAnimationFrame(() => els.visorFlash.classList.remove('active'));
+  setTimeout(() => els.reticle.classList.remove(reticleCls), ms);
+  if(badgeText){
+    els.hitBadge.textContent = badgeText;
+    els.hitBadge.classList.toggle('err', !!err);
+    els.hitBadge.classList.add('show');
+    clearTimeout(badgeTimer);
+    badgeTimer = setTimeout(() => els.hitBadge.classList.remove('show'), 1100);
+  }
+}
+
+function feedback(badgeText){
   beep();
   try{ navigator.vibrate?.(90); }catch(e){}
-  els.reticle.classList.add('flash');
-  setTimeout(() => els.reticle.classList.remove('flash'), 200);
+  flashVisor('flash', 200, badgeText, false);
 }
 
 function rejectFeedback(){
   beep(220);
   try{ navigator.vibrate?.([60, 40, 60]); }catch(e){}
-  els.reticle.classList.add('reject');
-  setTimeout(() => els.reticle.classList.remove('reject'), 350);
+  flashVisor('reject', 350, 'QR NÃO RECONHECIDO', true);
 }
 
 // Rampa: cada leitura de um QR de cliente ("0102 - meli", ou "CF:<ID>") soma 1 pessoa ao cliente; qualquer outro QR é rejeitado e não conta.
@@ -175,12 +211,12 @@ function registerRampa(cliente){
   renderRampa(f);
   renderLog(f);
   updateWarning();
-  els.rampaMsg.className = 'status-line';
+  els.rampaMsg.className = 'live-status-row';
   els.rampaMsg.textContent = `+1 ${cliente.nome}`;
   const { btn } = rampaBtns.get(cliente.id);
   btn.classList.add('hit');
   setTimeout(() => btn.classList.remove('hit'), 200);
-  feedback();
+  feedback(`+1 ${cliente.nome.toUpperCase()}`);
 }
 
 function onScan(raw){
@@ -189,7 +225,7 @@ function onScan(raw){
   if(!isRampa(f)) return register(raw, 1);
   const cliente = clienteDoQr(raw);
   if(cliente) return registerRampa(cliente);
-  els.rampaMsg.className = 'status-line err';
+  els.rampaMsg.className = 'live-status-row err';
   els.rampaMsg.textContent = 'QR não reconhecido — não foi contado.';
   rejectFeedback();
 }
@@ -206,6 +242,7 @@ function register(code, qty = 1){
 // ---------- câmera ----------
 function setCamUi(on, msg){
   els.camPlaceholder.classList.toggle('hidden', on);
+  els.visor.classList.toggle('live', on);
   els.camDot.className = on ? 'dot live' : 'dot';
   els.camStatus.textContent = msg;
   els.startBtn.classList.toggle('hidden', on);
@@ -254,7 +291,7 @@ els.undoBtn.addEventListener('click', () => {
   const rec = f && store.removeLastRecord(f);
   if(!rec) return;
   renderRampa(f); renderLog(f); updateWarning();
-  els.rampaMsg.className = 'status-line';
+  els.rampaMsg.className = 'live-status-row';
   els.rampaMsg.textContent = `Desfeito: -1 ${CLIENTES.find(c => c.id === rec.code)?.nome || rec.code}`;
 });
 els.resumoBtn.addEventListener('click', () => { const f = store.findFolder(currentId); if(f) downloadResumoCsv(f); });
@@ -270,6 +307,20 @@ els.printBtn.addEventListener('click', () => {
       el('tbody', {}, ...linhas.map(l => el('tr', {}, el('td', { textContent: l.nome }), el('td', { textContent: l.qtd }))),
         el('tr', { className: 'total' }, el('td', { textContent: 'TOTAL' }), el('td', { textContent: total })))));
   window.print();
+});
+els.copyBtn.addEventListener('click', async () => {
+  const f = store.findFolder(currentId);
+  if(!f) return;
+  try{
+    await navigator.clipboard.writeText(buildResumoTexto(f, mealLabels[f.meal] || f.meal));
+    els.shareStatus.textContent = 'Resumo copiado.';
+  }catch(e){
+    els.shareStatus.textContent = 'Não foi possível copiar neste navegador.';
+  }
+});
+els.whatsBtn.addEventListener('click', () => {
+  const f = store.findFolder(currentId);
+  if(f) window.open(`https://wa.me/?text=${encodeURIComponent(buildResumoTexto(f, mealLabels[f.meal] || f.meal))}`, '_blank', 'noopener');
 });
 els.startBtn.addEventListener('click', startCamera);
 els.stopBtn.addEventListener('click', stopCamera);

@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
 <title>Couve Flor — Leitor de Código</title>
 <link rel="icon" type="image/png" href="assets/icons/favicon-128.png">
 <link rel="apple-touch-icon" href="assets/icons/favicon-128.png">
@@ -10,40 +11,56 @@
 </head>
 <body>
 
-<header>
-  <img src="assets/logo.png" alt="Couve Flor" width="42" height="42">
-  <div class="htext">
-    <h1>Couve Flor — Refeições</h1>
-    <p>Registro de refeições por QR Code</p>
-  </div>
-</header>
-
 <!-- ===================== MENU (escolha do módulo) ===================== -->
 <div id="menuScreen">
-  <button type="button" class="menu-btn" id="menuPresencaBtn">
-    <span class="mtitulo">Presença</span>
-    <span class="mdesc">Ler o QR dos colaboradores e marcar quem comeu</span>
-    <span class="minfo" id="menuPresencaInfo"></span>
+  <div class="menu-logo-box">
+    <img class="menu-icon-hero" src="assets/logo.png" alt="Couve Flor" width="72" height="72">
+    <h1 class="menu-app-title">Couve Flor — Refeições</h1>
+    <p class="menu-app-sub">Registro de refeições por QR Code</p>
+  </div>
+
+  <button type="button" class="module-card" id="menuPresencaBtn">
+    <div class="module-top">
+      <div class="mod-icon-badge">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M16 2H8a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="10" r="3"/><path d="M9 18c0-1.66 1.34-3 3-3s3 1.34 3 3"/><path d="M10 2v2M14 2v2"/>
+        </svg>
+      </div>
+      <h2 class="mod-name">Presença</h2>
+      <span class="mod-tag mono" id="menuPresencaInfo"></span>
+    </div>
+    <p class="mod-desc">Ler o QR dos colaboradores e marcar quem comeu.</p>
   </button>
-  <button type="button" class="menu-btn" id="menuRampaBtn">
-    <span class="mtitulo">Rampa</span>
-    <span class="mdesc">Contar quantas pessoas de cada empresa passaram</span>
-    <span class="minfo" id="menuRampaInfo"></span>
+
+  <button type="button" class="module-card rampa-theme" id="menuRampaBtn">
+    <div class="module-top">
+      <div class="mod-icon-badge">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M16 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1z"/><path d="M2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h18"/>
+        </svg>
+      </div>
+      <h2 class="mod-name">Rampa</h2>
+      <span class="mod-tag mono" id="menuRampaInfo"></span>
+    </div>
+    <p class="mod-desc">Contar quantas pessoas de cada empresa passaram.</p>
   </button>
 </div>
 
 <!-- ===================== MÓDULO: NOVA PASTA + LISTA ===================== -->
 <div id="homeScreen" class="hidden">
 
-  <button class="backbtn" id="moduleBackBtn">&larr; Voltar ao menu</button>
-  <h2 class="module-title" id="moduleTitle"></h2>
+  <div class="screen-nav-header">
+    <button type="button" class="back-btn" id="moduleBackBtn">&larr; Menu</button>
+    <h2 class="screen-title" id="moduleTitle"></h2>
+    <span class="crumb-pill">módulo</span>
+  </div>
 
-  <div class="card">
-    <h2>Nova pasta</h2>
-    <div class="row" style="margin-bottom:10px;">
-      <div class="field">
-        <label class="flabel">Refeição</label>
-        <select id="mealSelect">
+  <div class="card-box">
+    <div class="card-box-header">Nova pasta</div>
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label" for="mealSelect">Refeição</label>
+        <select id="mealSelect" class="form-control">
           <option value="Desjejum">Desjejum</option>
           <option value="Cafe">Café</option>
           <option value="Almoco" selected>Almoço</option>
@@ -52,25 +69,25 @@
           <option value="LMadrugada">L. Madrugada</option>
         </select>
       </div>
-      <div class="field">
-        <label class="flabel">Data</label>
-        <input type="date" id="dateInput">
+      <div class="form-group">
+        <label class="form-label" for="dateInput">Data</label>
+        <input type="date" id="dateInput" class="form-control">
       </div>
     </div>
-    <div class="field" style="margin-bottom:12px;">
-      <label class="flabel">Nome da pasta</label>
-      <input type="text" id="folderNameInput" placeholder="Ex: Almoco15.09.2026">
+    <div class="form-group">
+      <label class="form-label" for="folderNameInput">Nome da pasta</label>
+      <input type="text" id="folderNameInput" class="form-control mono" placeholder="Ex: Almoco15.09.2026">
     </div>
-    <button class="block" id="createFolderBtn">Criar pasta</button>
+    <button type="button" class="btn-action" id="createFolderBtn">+ Criar pasta</button>
   </div>
 
-  <div class="card">
-    <h2>Pastas do dia</h2>
+  <div class="card-box">
+    <div class="card-box-header">Pastas do dia</div>
     <div class="folder-list" id="folderList"></div>
     <div class="empty-folders" id="emptyFolders">Nenhuma pasta criada ainda.</div>
   </div>
 
-  <div class="warn-box" id="storageWarning">
+  <div class="amber-alert" id="storageWarning">
     Os dados ficam salvos automaticamente neste navegador, mesmo se fechar a aba ou desligar a tela. Eles somem se limpar os dados do navegador ou trocar de aparelho — exporte o CSV quando quiser levar os registros pra outro lugar.
   </div>
 
@@ -79,71 +96,79 @@
 <!-- ===================== TELA DA PASTA ===================== -->
 <div id="folderScreen" class="hidden">
 
-  <button class="backbtn" id="backBtn">&larr; Voltar para as pastas</button>
+  <div class="screen-nav-header">
+    <button type="button" class="back-btn" id="backBtn">&larr; Pastas</button>
+    <span class="crumb-pill mono" id="folderTitle">Pasta</span>
+  </div>
+  <p class="folder-meta" id="folderSubtitle"></p>
 
-  <div class="card">
-    <h2 id="folderTitle" style="font-size:16px;">Pasta</h2>
-    <p id="folderSubtitle" style="margin:0; font-size:12.5px; color: var(--text-dim);"></p>
+  <!-- visor da câmera -->
+  <div class="camera-visor" id="visor">
+    <video id="video" playsinline muted></video>
+    <div class="visor-grid"></div>
+    <div class="visor-scanline"></div>
+    <div class="reticle-box" id="reticle">
+      <span class="reticle-corner tl"></span><span class="reticle-corner tr"></span>
+      <span class="reticle-corner bl"></span><span class="reticle-corner br"></span>
+    </div>
+    <div class="cam-placeholder" id="camPlaceholder">Toque em "Iniciar câmera" para começar.</div>
+    <div class="visor-overlay-chip hidden" id="rampaChip"><span>Total</span><b class="mono" id="rampaTotal">0</b></div>
+    <div class="visor-hit-badge" id="hitBadge"></div>
+    <div class="visor-flash" id="visorFlash"></div>
   </div>
 
-  <div class="card">
-    <h2>Câmera</h2>
-    <div class="cam-wrap">
-      <video id="video" playsinline muted></video>
-      <div class="reticle" id="reticle"></div>
-      <div class="cam-placeholder" id="camPlaceholder">Toque em "Iniciar câmera" para começar.</div>
-    </div>
-    <div class="cam-controls">
-      <div class="field" style="flex:0 0 150px;">
-        <label class="flabel">Intervalo de leitura</label>
-        <select id="intervalSelect">
-          <option value="1000">1,0 segundo</option>
-          <option value="1500" selected>1,5 segundo</option>
-        </select>
-      </div>
-      <button id="startBtn">Iniciar câmera</button>
-      <button id="stopBtn" class="danger hidden">Parar câmera</button>
-    </div>
-    <div class="status-line">
+  <div class="cam-status-bar">
+    <div class="status-dot-txt">
       <span class="dot" id="camDot"></span>
       <span id="camStatus">Câmera parada.</span>
     </div>
+    <button type="button" class="btn-secondary" id="startBtn">Iniciar câmera</button>
+    <button type="button" class="btn-secondary hidden" id="stopBtn">Parar câmera</button>
   </div>
 
-  <div class="card hidden" id="rampaCard">
-    <h2>Contagem por cliente</h2>
-    <div class="rampa-grid" id="rampaGrid"></div>
-    <div class="rampa-foot">
-      <div class="stat"><b id="rampaTotal">0</b><span>total de pessoas</span></div>
-      <button class="secondary" id="undoBtn">Desfazer última</button>
+  <div class="interval-row">
+    <label for="intervalSelect">Intervalo de leitura:</label>
+    <select id="intervalSelect" class="form-control">
+      <option value="1000">1,0 segundo</option>
+      <option value="1500" selected>1,5 segundo</option>
+    </select>
+  </div>
+
+  <!-- Rampa: contagem por cliente -->
+  <div id="rampaCard" class="hidden">
+    <div class="live-status-row" id="rampaMsg" role="status" aria-live="polite"></div>
+    <div class="clients-grid" id="rampaGrid"></div>
+
+    <div class="stacked-bar-wrap">
+      <div class="stacked-bar-label"><span>Distribuição de clientes</span></div>
+      <div class="stacked-bar-track" id="rampaBar" aria-hidden="true"></div>
     </div>
-    <div class="status-line" id="rampaMsg" role="status"></div>
-  </div>
 
-  <div class="card" id="manualCard">
-    <h2>Registro manual</h2>
-    <div class="row">
-      <div class="field" style="flex:2 1 140px;">
-        <label class="flabel">Código</label>
-        <input type="text" id="manualCode" placeholder="Ex: 10119184">
-      </div>
-      <div class="field" style="flex:0 0 70px;">
-        <label class="flabel">Qtd</label>
-        <input type="number" id="manualQty" value="1" min="1">
-      </div>
-      <button id="manualBtn" class="secondary">Registrar</button>
+    <div class="undo-bar">
+      <span>última: <strong id="rampaLast">—</strong></span>
+      <button type="button" class="undo-btn" id="undoBtn">Desfazer última</button>
     </div>
   </div>
 
-  <div class="card">
-    <h2>Registros da pasta</h2>
+  <!-- Presença: registro manual -->
+  <div class="card-box" id="manualCard">
+    <div class="card-box-header">Registro manual</div>
+    <div class="manual-row">
+      <input type="text" id="manualCode" class="form-control mono" placeholder="Código (ex: 10119184)" aria-label="Código">
+      <input type="number" id="manualQty" class="form-control mono qty" value="1" min="1" aria-label="Quantidade">
+      <button type="button" class="btn-action" id="manualBtn">Registrar</button>
+    </div>
+  </div>
+
+  <!-- Presença: registros -->
+  <div class="card-box" id="logCard">
+    <div class="card-box-header">Registros da pasta</div>
     <div class="stats">
-      <div class="stat"><b id="totalCount">0</b><span>total</span></div>
-      <div class="stat"><b id="uniqueCount">0</b><span>códigos únicos</span></div>
+      <div class="stat"><b class="mono" id="totalCount">0</b><span>total</span></div>
+      <div class="stat"><b class="mono" id="uniqueCount">0</b><span>códigos únicos</span></div>
     </div>
-    <div style="height:12px;"></div>
     <div class="log-scroll">
-      <table>
+      <table class="log-table">
         <thead><tr><th>TIME</th><th>CODE</th><th>QTY</th></tr></thead>
         <tbody id="logBody"></tbody>
       </table>
@@ -151,26 +176,28 @@
     </div>
   </div>
 
-  <div class="card">
-    <h2>Exportar</h2>
-    <div class="btnrow">
-      <button class="secondary" id="downloadBtn">Baixar CSV</button>
-      <button id="shareBtn">Enviar por e-mail</button>
+  <!-- exportar -->
+  <div class="export-box">
+    <div class="export-grid">
+      <button type="button" class="btn-secondary" id="downloadBtn">Baixar CSV</button>
+      <button type="button" class="btn-secondary" id="shareBtn">E-mail</button>
     </div>
-    <div class="btnrow hidden" id="rampaExport" style="margin-top:10px;">
-      <button class="secondary" id="resumoBtn">Baixar resumo (CSV)</button>
-      <button class="secondary" id="printBtn">Imprimir resumo</button>
+    <div class="export-grid hidden" id="rampaExport">
+      <button type="button" class="btn-secondary" id="resumoBtn">Resumo (CSV)</button>
+      <button type="button" class="btn-secondary" id="printBtn">Imprimir resumo</button>
+      <button type="button" class="btn-secondary" id="whatsBtn">WhatsApp</button>
+      <button type="button" class="btn-secondary" id="copyBtn">Copiar texto</button>
     </div>
-    <div class="status-line" id="shareStatus"></div>
+    <div class="status-line" id="shareStatus" role="status"></div>
   </div>
 
-  <div class="card">
-    <h2>Excluir pasta</h2>
-    <p style="margin:0 0 12px; font-size:12.5px; color: var(--text-dim);">
-      Depois de exportar o CSV ou enviar por e-mail, você pode apagar esta pasta e todos os registros dela. Essa ação não tem volta.
-    </p>
-    <button class="danger block" id="deleteFolderBtn">Excluir esta pasta</button>
-  </div>
+  <details class="danger-details">
+    <summary>Zona de perigo — Excluir pasta</summary>
+    <div class="danger-body">
+      <p>Depois de exportar o CSV ou enviar por e-mail, você pode apagar esta pasta e todos os registros dela. Essa ação não tem volta.</p>
+      <button type="button" class="btn-danger" id="deleteFolderBtn">Excluir esta pasta</button>
+    </div>
+  </details>
 
 </div>
 
