@@ -7,12 +7,20 @@
 <title>Couve Flor — Leitor de Código</title>
 <link rel="icon" type="image/png" href="assets/icons/favicon-128.png">
 <link rel="apple-touch-icon" href="assets/icons/favicon-128.png">
+<script>try{var t=localStorage.getItem("cf-tema");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <!-- ===================== MENU (escolha do módulo) ===================== -->
 <div id="menuScreen">
+  <div class="menu-top">
+    <div class="theme-switch" role="group" aria-label="Tema">
+      <button type="button" data-theme-val="light">Claro</button>
+      <button type="button" data-theme-val="dark">Escuro</button>
+      <button type="button" data-theme-val="auto">Auto</button>
+    </div>
+  </div>
   <div class="menu-logo-box">
     <img class="menu-icon-hero" src="assets/logo.png" alt="Couve Flor" width="72" height="72">
     <h1 class="menu-app-title">Couve Flor — Refeições</h1>

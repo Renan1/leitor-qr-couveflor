@@ -263,6 +263,20 @@ async function startCamera(){
   }
 }
 
+// ---------- tema (claro / escuro / auto) ----------
+function applyTheme(t){
+  if(t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+  else delete document.documentElement.dataset.theme;
+  document.querySelectorAll('[data-theme-val]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeVal === t)));
+}
+let savedTheme = 'auto';
+try{ savedTheme = localStorage.getItem('cf-tema') || 'auto'; }catch(e){}
+applyTheme(savedTheme);
+document.querySelectorAll('[data-theme-val]').forEach(b => b.addEventListener('click', () => {
+  applyTheme(b.dataset.themeVal);
+  try{ localStorage.setItem('cf-tema', b.dataset.themeVal); }catch(e){}
+}));
+
 // ---------- eventos ----------
 els.dateInput.value = todayISO();
 els.folderNameInput.value = suggestName();
