@@ -1,21 +1,29 @@
-// Clientes do modo Rampa. O QR carrega só o id estável ("CF:MELI"); o nome pode mudar sem reimprimir QR.
+// Clientes do modo Rampa. `id` é o código estável gravado no CSV; `cod`/`qr` vêm dos QRs oficiais da operação ("0102 - meli").
 export const CLIENTES = [
-  { id: 'TUPP', nome: 'Tupperware',      tipo: 'contrato' },
-  { id: 'GRAN', nome: 'Granvita',        tipo: 'contrato' },
-  { id: 'MELI', nome: 'Mercado Livre',   tipo: 'contrato' },
-  { id: 'COM',  nome: 'Cliente Comum',   tipo: 'avulso' },
-  { id: 'BALC', nome: 'Cliente Balcão',  tipo: 'balcao' },
+  { id: 'TUPP', nome: 'Tupperware',      tipo: 'contrato', cod: 100, qr: '0100 - tupperware' },
+  { id: 'GRAN', nome: 'Granvita',        tipo: 'contrato', cod: 101, qr: '0101 - granvita' },
+  { id: 'MELI', nome: 'Mercado Livre',   tipo: 'contrato', cod: 102, qr: '0102 - meli' },
+  { id: 'COM',  nome: 'Cliente Comum',   tipo: 'avulso',   cod: 103, qr: '0103 - comum' },
+  { id: 'LOG',  nome: 'Log',             tipo: 'contrato', cod: 104, qr: '0104 - log' },
+  { id: 'BALC', nome: 'Cliente Balcão',  tipo: 'balcao' }, // sem QR oficial: só o cartão antigo "CF:BALC"
 ];
 
 export const QR_PREFIX = 'CF:';
-export const qrDoCliente = (id) => QR_PREFIX + id;
+// Texto que o cartão impresso carrega: o QR oficial, ou "CF:<ID>" para quem não tem.
+export const qrDoCliente = (id) => CLIENTES.find(c => c.id === id)?.qr || QR_PREFIX + id;
+
+// "0102 - meli": número (zeros à esquerda não importam) + hífen + nome. Crachá (só dígitos) não casa.
+const QR_OFICIAL = /^0*(\d+)\s*[-–]\s*\S.*$/;
 
 // Texto lido do QR -> cliente, ou null se não for um QR de cliente.
 export function clienteDoQr(texto){
   const t = String(texto).trim();
-  if(!t.startsWith(QR_PREFIX)) return null;
-  const id = t.slice(QR_PREFIX.length).toUpperCase();
-  return CLIENTES.find(c => c.id === id) || null;
+  if(t.startsWith(QR_PREFIX)){
+    const id = t.slice(QR_PREFIX.length).toUpperCase();
+    return CLIENTES.find(c => c.id === id) || null;
+  }
+  const m = QR_OFICIAL.exec(t);
+  return m ? CLIENTES.find(c => c.cod === Number(m[1])) || null : null;
 }
 
 // Totais por cliente (soma de qty) e total geral de uma pasta do modo Rampa.

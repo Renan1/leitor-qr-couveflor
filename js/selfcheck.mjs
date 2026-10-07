@@ -20,6 +20,11 @@ assert.equal(clienteDoQr(' cf:meli '), null);            // prefixo exato, case 
 assert.equal(clienteDoQr('CF:meli').id, 'MELI');         // id aceita minúsculas
 assert.equal(clienteDoQr('10119184'), null);             // crachá não conta
 assert.equal(clienteDoQr('CF:XXXX'), null);
+// QRs oficiais da rampa
+for(const [qr, id] of [['0100 - tupperware', 'TUPP'], ['0101 - granvita', 'GRAN'], ['0102 - meli', 'MELI'], ['0103 - comum', 'COM'], ['0104 - log', 'LOG'], ['000102 – Meli', 'MELI']])
+  assert.equal(clienteDoQr(qr).id, id);
+assert.equal(clienteDoQr('0199 - outro'), null);
+assert.equal(clienteDoQr('0102'), null);
 
 const pasta = { records: [], seen: new Map() };
 for(const code of ['TUPP', 'MELI', 'MELI', 'COM']) pasta.records.push({ time: 't', code, qty: 1 });

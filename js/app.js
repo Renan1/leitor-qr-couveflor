@@ -167,7 +167,7 @@ function rejectFeedback(){
   setTimeout(() => els.reticle.classList.remove('reject'), 350);
 }
 
-// Rampa: cada leitura de "CF:<ID>" soma 1 pessoa ao cliente; qualquer outro QR é rejeitado e não conta.
+// Rampa: cada leitura de um QR de cliente ("0102 - meli", ou "CF:<ID>") soma 1 pessoa ao cliente; qualquer outro QR é rejeitado e não conta.
 function registerRampa(cliente){
   const f = store.findFolder(currentId);
   if(!f) return;
