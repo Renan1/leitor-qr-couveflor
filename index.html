@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Couve Flor — Leitor de Código</title>
+<link rel="icon" type="image/png" href="assets/icons/favicon-128.png">
+<link rel="apple-touch-icon" href="assets/icons/favicon-128.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <img src="assets/logo.png" alt="Couve Flor" width="42" height="42">
+  <div class="htext">
+    <h1>Couve Flor — Refeições</h1>
+    <p>Registro de refeições por QR Code</p>
+  </div>
+</header>
+
+<!-- ===================== TELA INICIAL ===================== -->
+<div id="homeScreen">
+
+  <div class="card">
+    <h2>Nova pasta</h2>
+    <div class="row" style="margin-bottom:10px;">
+      <div class="field">
+        <label class="flabel">Refeição</label>
+        <select id="mealSelect">
+          <option value="Desjejum">Desjejum</option>
+          <option value="Cafe">Café</option>
+          <option value="Almoco" selected>Almoço</option>
+          <option value="Jantar">Jantar</option>
+          <option value="Ceia">Ceia</option>
+          <option value="LMadrugada">L. Madrugada</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="flabel">Data</label>
+        <input type="date" id="dateInput">
+      </div>
+    </div>
+    <div class="field" style="margin-bottom:12px;">
+      <label class="flabel">Nome da pasta</label>
+      <input type="text" id="folderNameInput" placeholder="Ex: Almoco15.09.2026">
+    </div>
+    <button class="block" id="createFolderBtn">Criar pasta</button>
+  </div>
+
+  <div class="card">
+    <h2>Pastas do dia</h2>
+    <div class="folder-list" id="folderList"></div>
+    <div class="empty-folders" id="emptyFolders">Nenhuma pasta criada ainda.</div>
+  </div>
+
+  <div class="warn-box" id="storageWarning">
+    Os dados ficam salvos automaticamente neste navegador, mesmo se fechar a aba ou desligar a tela. Eles somem se limpar os dados do navegador ou trocar de aparelho — exporte o CSV quando quiser levar os registros pra outro lugar.
+  </div>
+
+</div>
+
+<!-- ===================== TELA DA PASTA ===================== -->
+<div id="folderScreen" class="hidden">
+
+  <button class="backbtn" id="backBtn">&larr; Voltar para as pastas</button>
+
+  <div class="card">
+    <h2 id="folderTitle" style="font-size:16px;">Pasta</h2>
+    <p id="folderSubtitle" style="margin:0; font-size:12.5px; color: var(--text-dim);"></p>
+  </div>
+
+  <div class="card">
+    <h2>Câmera</h2>
+    <div class="cam-wrap">
+      <video id="video" playsinline muted></video>
+      <div class="reticle" id="reticle"></div>
+      <div class="cam-placeholder" id="camPlaceholder">Toque em "Iniciar câmera" para começar.</div>
+    </div>
+    <div class="cam-controls">
+      <div class="field" style="flex:0 0 150px;">
+        <label class="flabel">Intervalo de leitura</label>
+        <select id="intervalSelect">
+          <option value="1000">1,0 segundo</option>
+          <option value="1500" selected>1,5 segundo</option>
+        </select>
+      </div>
+      <button id="startBtn">Iniciar câmera</button>
+      <button id="stopBtn" class="danger hidden">Parar câmera</button>
+    </div>
+    <div class="status-line">
+      <span class="dot" id="camDot"></span>
+      <span id="camStatus">Câmera parada.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Registro manual</h2>
+    <div class="row">
+      <div class="field" style="flex:2 1 140px;">
+        <label class="flabel">Código</label>
+        <input type="text" id="manualCode" placeholder="Ex: 10119184">
+      </div>
+      <div class="field" style="flex:0 0 70px;">
+        <label class="flabel">Qtd</label>
+        <input type="number" id="manualQty" value="1" min="1">
+      </div>
+      <button id="manualBtn" class="secondary">Registrar</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Registros da pasta</h2>
+    <div class="stats">
+      <div class="stat"><b id="totalCount">0</b><span>total</span></div>
+      <div class="stat"><b id="uniqueCount">0</b><span>códigos únicos</span></div>
+    </div>
+    <div style="height:12px;"></div>
+    <div class="log-scroll">
+      <table>
+        <thead><tr><th>TIME</th><th>CODE</th><th>QTY</th></tr></thead>
+        <tbody id="logBody"></tbody>
+      </table>
+      <div class="empty-log" id="emptyLog">Nenhum registro ainda.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Exportar</h2>
+    <div class="btnrow">
+      <button class="secondary" id="downloadBtn">Baixar CSV</button>
+      <button id="shareBtn">Enviar por e-mail</button>
+    </div>
+    <div class="status-line" id="shareStatus"></div>
+  </div>
+
+  <div class="card">
+    <h2>Excluir pasta</h2>
+    <p style="margin:0 0 12px; font-size:12.5px; color: var(--text-dim);">
+      Depois de exportar o CSV ou enviar por e-mail, você pode apagar esta pasta e todos os registros dela. Essa ação não tem volta.
+    </p>
+    <button class="danger block" id="deleteFolderBtn">Excluir esta pasta</button>
+  </div>
+
+</div>
+
+<script src="vendor/jsQR.js"></script>
+<script type="module" src="js/app.js"></script>
+
+</body>
+</html>

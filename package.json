@@ -1,0 +1,6 @@
+{
+  "name": "leitor-qr-couveflor",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node js/selfcheck.mjs", "start": "npx serve ." }
+}
